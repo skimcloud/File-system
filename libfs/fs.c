@@ -46,7 +46,7 @@ int fs_mount(const char *diskname)
 	/* Disk Error Checking */
 	if (block_disk_open(diskname) == -1) {						// Disk can't be opened
 		return -1;
-	} else if (block_read(0, &super) == -1) {					// Superblock can't be reda
+	} else if (block_read(0, &super) == -1) {					// Superblock can't be read
 		return -1;
 	} else if (super.totalBlocks != block_disk_count()) {		// Block count off
 		return -1;
