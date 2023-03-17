@@ -45,26 +45,25 @@ struct rootDirectory root;
 /* TODO: Phase 1 */
 int fs_mount(const char *diskname)
 {
-	/* Disk Error Checking */
-	if (block_disk_open(diskname) == -1) {						// Disk can't be opened
+	/* ECS150 Disk Format Error Check */
+	if (block_disk_open(diskname) == -1) {												// Disk can't be opened
 		return -1;
-	} else if (block_read(0, &super) == -1) {					// Superblock can't be read
+	} else if (block_read(0, &super) == -1) {											// Superblock can't be read
 		return -1;
-	} else if (super.totalBlocks != block_disk_count()) {		// Block count off
+	} else if (1 + super.numFATBlocks + 1 + super.numDataBlocks != super.totalBlocks) { // Incorrect total blocks
 		return -1;
-	} else if (memcmp("ECS150FS", super.signature, 8) != 0) {   // Signature off
+	} else if (super.totalBlocks != block_disk_count()) {								// Block count off
+		return -1;
+	} else if (memcmp("ECS150FS", super.signature, 8) != 0) {   						// Incorrect Signature
         return -1;
-	}
-
-	/* ECS150-fs Format Checking */
-	if (super.numFatBlocks + 1 != super.rootIndex) {			// Incorrect fat block start index
+	} else if (super.numFatBlocks + 1 != super.rootIndex) {								// Incorrect fat block start index
  		return -1;
-	} else if (super.rootIndex + 1 != super.dataIndex) {		// Incorrect data block start index
+	} else if (super.rootIndex + 1 != super.dataIndex) {								// Incorrect data block start index
 		return -1;
 	}
 
 	/* FAT Array Mapping */
-	fat.arr = malloc(super.numFatBlocks * BLOCK_SIZE * sizeof(uint16_t));
+	fat.arr = (uint16_t*)malloc(super.numFatBlocks * BLOCK_SIZE * sizeof(uint16_t));
 	void *buf = (void*)malloc(BLOCK_SIZE);
 	for(int i = 1; i < super.rootIndex; i++) {
 		if(block_read(i, buf) == -1) {
@@ -126,7 +125,7 @@ int fs_info(void)
 int fs_create(const char *filename)
 {
 	/* TODO: Phase 2 */
-	
+
 }
 
 int fs_delete(const char *filename)
