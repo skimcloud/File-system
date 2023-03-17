@@ -36,6 +36,8 @@ struct __attribute__((packed)) rootDirectory {
 	struct rootEntry rootEntry[MAX_FILES];
 };
 
+
+/* Global Variables */
 struct superBlock super;
 struct FAT fat;
 struct rootDirectory root;
@@ -64,7 +66,7 @@ int fs_mount(const char *diskname)
 	/* FAT Array Mapping */
 	fat.arr = malloc(super.numFatBlocks * BLOCK_SIZE * sizeof(uint16_t));
 	void *buf = (void*)malloc(BLOCK_SIZE);
-	for(int i = 0; i < super.rootIndex; i++) {
+	for(int i = 1; i < super.rootIndex; i++) {
 		if(block_read(i, buf) == -1) {
 			return -1;
 		} else {
@@ -88,7 +90,23 @@ int fs_mount(const char *diskname)
 int fs_umount(void)
 {
 	/* TODO: Phase 1 */
+	if (block_write(0, &super) == -1) {							// Superblock can't be read
+		return -1;
+	} else if (block_write(super_rootIndex, &root) == -1) {		// Root directory can't be written to
+		return -1;
+	}
 
+	for(int i = 1; i < super.rootIndex; i++) {
+		if (block_write(i, fat.arr + (i-1) * BLOCK_SIZE) == -1){
+			return -1;
+		}
+	}
+
+	if (block_disk_close() == -1) {
+		return -1;
+	}
+
+	return 0;
 }
 
 int fs_info(void)
