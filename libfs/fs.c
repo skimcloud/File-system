@@ -15,7 +15,7 @@ struct __attribute__((packed)) superBlock {
     char signature[8]; 			// Signature (must be equal to “ECS150FS”)
     uint16_t totalBlocks;		// Total amount of blocks of virtual disk
     uint16_t rootIndex;			// Root directory block index
-    uint16_t dataIndex;	// Data block start index
+    uint16_t dataIndex;			// Data block start index
     uint16_t numDataBlocks;		// Amount of data blocks
     uint8_t numFATBlocks;		// Number of blocks for FAT
     char padding[4079];			// Unused/Padding
@@ -106,17 +106,27 @@ int fs_umount(void)
 		return -1;
 	}
 
+	/* Sucessful Unmount! */
 	return 0;
 }
 
 int fs_info(void)
 {
 	/* TODO: Phase 1 */
+	printf("FS Info:\n");
+	printf("Total # of Blocks: %i\n", super.totalBlocks);
+	printf("Total # of FAT Blocks: %i\n", super.numFATBlocks);
+	printf("Total # of Data Blocks: %i\n", super.numDataBlocks);
+	printf("Root Directory Index: %i\n", super.rootIndex);
+	printf("Data Block Start Index: %i\n", super.dataIndex);
+
+	return 0;
 }
 
 int fs_create(const char *filename)
 {
 	/* TODO: Phase 2 */
+	
 }
 
 int fs_delete(const char *filename)
