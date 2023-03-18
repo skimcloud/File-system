@@ -57,6 +57,7 @@ struct fileDirectory open_files;
 /* TODO: Phase 1 */
 int fs_mount(const char *diskname)
 {
+	printf("\n MOUNT THIS syntax \n");
 	/* ECS150 Disk Format Error Check */
 	if (block_disk_open(diskname) == -1) {												// Disk can't be opened
 		return -1;

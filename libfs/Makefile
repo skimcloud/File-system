@@ -1,3 +1,4 @@
+lib := libfs.a
 objs := disk.o fs.o
 CC = gcc
 CFLAGS  = -g -Wall -Wextra -Werror
@@ -6,7 +7,6 @@ Q=@
 endif
 deps := $(patsubst %.o,%.d,$(objs)) 
 -include $(deps)
-DEPFLAGS = -MMD -MF $(@:.o=.d)
 libfs.a: $(objs)
 	@echo "AR $@"
 	$(Q)ar rcs $@ $^	
