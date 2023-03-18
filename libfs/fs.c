@@ -120,8 +120,8 @@ int fs_umount(void)
 
 int free_fat() {
 	int num_free = 0;
-	for (int i = 0; i < super.data_blocks_num; i++){
-		if (fat.arr[i] == 0) {
+	for (int i = 0; i < super.numDataBlocks; i++){
+		if (fat[i] == 0) {
 			num_free++;
 		}
 	}
@@ -147,10 +147,8 @@ int fs_info(void)
 	printf("rdir_blk=%i\n", super.numDataBlocks);
 	printf("data_blk=%i\n", super.rootIndex);
 	printf("data_blk_count=%i\n", super.dataIndex);
-	int free_fat = free_fat();
-	int free_dir = free_dir();
-	printf("fat_free_ratio=%d/%d\n", free_fat, super.numDataBlocks);
-	printf("rdir_free_ratio=%d/%d\n", free_root, FS_FILE_MAX_COUNT);
+	printf("fat_free_ratio=%d/%d\n", free_fat(), super.numDataBlocks);
+	printf("rdir_free_ratio=%d/%d\n", free_dir(), FS_FILE_MAX_COUNT);
 
 	return 0;
 }
