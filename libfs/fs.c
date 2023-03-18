@@ -118,15 +118,39 @@ int fs_umount(void)
 	return 0;
 }
 
+int free_fat() {
+	int num_free = 0;
+	for (int i = 0; i < super.data_blocks_num; i++){
+		if (fat.arr[i] == 0) {
+			num_free++;
+		}
+	}
+    return num_free;
+}
+
+int free_dir() {
+	int num_free = 0;
+	for (int i = 0; i < FS_FILE_MAX_COUNT; i++){
+		if (root.rootEntry[i].fileName[0] == '\0') {
+			num_free++;
+		}
+	}
+    return num_free;
+}
+
 int fs_info(void)
 {
 	/* TODO: Phase 1 */
 	printf("FS Info:\n");
-	printf("Total # of Blocks: %i\n", super.totalBlocks);
-	printf("Total # of FAT Blocks: %i\n", super.numFATBlocks);
-	printf("Total # of Data Blocks: %i\n", super.numDataBlocks);
-	printf("Root Directory Index: %i\n", super.rootIndex);
-	printf("Data Block Start Index: %i\n", super.dataIndex);
+	printf("total_blk_count=%i\n", super.totalBlocks);
+	printf("fat_blk_count=%i\n", super.numFATBlocks);
+	printf("rdir_blk=%i\n", super.numDataBlocks);
+	printf("data_blk=%i\n", super.rootIndex);
+	printf("data_blk_count=%i\n", super.dataIndex);
+	int free_fat = free_fat();
+	int free_dir = free_dir();
+	printf("fat_free_ratio=%d/%d\n", free_fat, super.numDataBlocks);
+	printf("rdir_free_ratio=%d/%d\n", free_root, FS_FILE_MAX_COUNT);
 
 	return 0;
 }
