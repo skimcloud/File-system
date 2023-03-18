@@ -146,14 +146,13 @@ int fs_create(const char *filename)
 		if (strcmp((char*)rootdir.entry[i].filename, filename) == 0) {
 			return -1; 
 		} 
-		if (rootdir.entry[i].filename[0] != '\0') { // Non empty entry found, increment file count
+		else if (rootdir.entry[i].filename[0] != '\0') { // Non empty entry found, increment file count
 			fileCount++;										
 		}
-	}
-
-	/* Max File Count Exceeded */
-	if (fileCount >= FS_FILE_MAX_COUNT) {
-		return -1;
+		/* Max File Count Exceeded */
+		else if (fileCount >= FS_FILE_MAX_COUNT) {
+			return -1;
+		}
 	}
 
 	/* Create File */
