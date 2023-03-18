@@ -25,7 +25,7 @@ struct __attribute__((packed)) FAT {
 };
 
 struct __attribute__((packed)) rootEntry {
-	char fileName[16];
+	char fileName[FS_FILENAME_LEN];
 	uint32_t fileSize;
 	uint16_t dataBlockIndex;
 	uint8_t padding[10];
@@ -35,11 +35,22 @@ struct __attribute__((packed)) rootDirectory {
 	struct rootEntry rootEntry[FS_FILE_MAX_COUNT];
 };
 
+struct __attribute__((packed)) fileEntry {
+	char fileName[FS_FILENAME_LEN];
+	uint8_t offset;
+};
+
+struct __attribute__((packed)) fileDirectory {
+	struct fileEntry fileEntry[FS_OPEN_MAX_COUNT];
+	uint8_t numFilesOpen;
+};
+
 
 /* Global Variables */
 struct superBlock super;
 struct FAT fat;
 struct rootDirectory root;
+struct fileDirectory open_files;
 
 /* TODO: Phase 1 */
 int fs_mount(const char *diskname)
@@ -210,6 +221,31 @@ int fs_ls(void)
 int fs_open(const char *filename)
 {
 	/* TODO: Phase 3 */
+	if (filename == NULL) {
+		return -1;
+	}
+
+	bool fileFound = false;
+	for (int i = 0; i < FS_FILE_MAX_COUNT; i++) {
+		if (strcmp((char*)root.rootEntry[i].fileName, filename) == 0) {
+			fileFound = true;
+		}
+	}
+
+	if (!fileFound) {
+		return -1;
+	}
+
+	for (int i = 0; i < FS_OPEN_MAX_COUNT; i++) {
+		if (root.rootEntry[i].fileName[0] != '\0'){	
+			strcpy(open_files[i].fileName, filename);
+			open_files.numFilesOpen++;
+			open_files.fileEntry[i].offset = 0; 
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 int fs_close(int fd)
